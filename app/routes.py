@@ -1,8 +1,14 @@
 from flask import Blueprint, request, jsonify
+from app.intent_parser import parse_intent
+from app.intent_router import IntentRouter
 
-main = Blueprint("main", __name__)
+router = Blueprint("main", __name__)
+handler = IntentRouter()
 
-@main.route("/chat", methods=["POST"])
+
+@router.route("/chat", methods=["POST"])
 def chat():
     data = request.get_json()
-    return jsonify({"response": f"You said: {data.get('prompt')}"})
+    intent_req = parse_intent(data)
+    result = router.route(intent_req)
+    return jsonify(result)
